@@ -23,21 +23,14 @@ def getNetworkWiFiList():
 
 
 def setNetworkWifi(ssid: str, password: str):
-    flag = "wifi"
     network_status_list = subprocess.Popen("nmcli device status | grep \" wifi \" | awk '{print $3} {print $4}'", shell=True, stdout=subprocess.PIPE).stdout.readlines()
-    network_status = network_status_list[0].decode('utf-8').strip('\n')
     network_connection = network_status_list[1].decode('utf-8').strip('\n')
-    print("network_status:" + network_status + "\tnetwork_connection:" + network_connection)
-    if network_status == "connected":
-        while not downConnection(network_connection): pass
     if network_connection == "Hotspot":
-        flag = "ap"
+        downConnection("Hotspot")
         os.system("nmcli dev wifi rescan")
     if not connectWifi(ssid, password):
         while not deleteConnection(ssid): pass
-        if flag == "ap":
-            restartAp()
-        else:
+        if network_connection != "Hotspot":
             os.system("nmcli dev wifi rescan")
             os.system("nmcli c up " + network_connection)
 
@@ -86,11 +79,11 @@ def rescanWiFiList():
     network_status = network_status_list[0].decode('utf-8').strip('\n')
     network_connection = network_status_list[1].decode('utf-8').strip('\n')
     if network_status == "connected" and network_connection == "Hotspot":
-        return {"statusCode": "401", "message": "Ap model can not support WiFi resan"}
+        downConnection("Hotspot")
+        os.system("nmcli dev wifi rescan")
+        updateWiFiList()
     else:
         updateWiFiList()
-        return {"statusCode": "200", "message": "ok"}
-
 
 def updateWiFiList():
     wifi_info = subprocess.Popen("nmcli dev wifi list | grep Infra | awk '$1!=\"*\"' | awk '{print $2} {print $7}'", shell=True, stdout=subprocess.PIPE).stdout.readlines()
@@ -100,5 +93,3 @@ def updateWiFiList():
     with open(CONFIG_PATH, "w", encoding='utf-8') as f:
         f.write(json.dumps(wifi_json, ensure_ascii=False))
     f.close()
-
-

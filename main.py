@@ -39,7 +39,7 @@ def getWifiList():
 
 @app.get("/api/rescan")
 def rescanWiFi():
-    return net.rescanWiFiList()
+    net.rescanWiFiList()
 
 
 @app.post("/api/wifi")
