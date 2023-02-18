@@ -1,11 +1,13 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from pydantic import BaseModel
+from typing import Union
 import network as net
 from starlette.middleware.cors import CORSMiddleware
 
+
 class WiFi(BaseModel):
-    ssid: str
-    passwd: str
+    ssid: Union[str, None] = Query(default=None, regex="^[0-9a-zA-Z_-]{1,}$")
+    passwd: Union[str, None] = Query(default=None, min_length=8, max_length=32, regex="^[0-9a-zA-Z_-]{1,}$")
 
 
 class ReWiFi (WiFi):
