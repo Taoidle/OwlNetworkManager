@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Query
 from pydantic import BaseModel
 from typing import Union
-import network as net
+from network import NetWork
 from starlette.middleware.cors import CORSMiddleware
 
 
@@ -31,19 +31,20 @@ def root():
 
 @app.get("/api/status")
 def getStatus():
-    return net.getNetworkStatus()
+    return NetWork().getNetworkStatus()
 
 
 @app.get("/api/list")
 def getWifiList():
-    return net.getNetworkWiFiList()
+    return NetWork().getNetworkWiFiList()
 
 
 @app.get("/api/rescan")
 def rescanWiFi():
-    net.rescanWiFiList()
+    NetWork().rescanWiFiList()
 
 
 @app.post("/api/wifi")
 def connectWiFi(wifi: WiFi):
     net.setNetworkWifi(wifi.ssid, wifi.passwd)
+    NetWork().setNetworkWifi(wifi.ssid, wifi.passwd)
