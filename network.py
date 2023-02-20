@@ -17,7 +17,7 @@ class NetWork:
     def __init__(self):
         pass
 
-    def getNetworkStatus(self):
+    def getNetworkStatus(self) -> dict:
         network_status_list = subprocess.Popen("nmcli device status | grep \" wifi \" | awk '{print $1} {print $3} {print $4}'", shell=True, stdout=subprocess.PIPE).stdout.readlines()
         network_status = network_status_list[1].decode('utf-8').strip('\n')
         network_connection = network_status_list[2].decode('utf-8').strip('\n')
@@ -26,13 +26,13 @@ class NetWork:
         else:
             return {"statusCode": "200", "status": "disconnected"}
 
-    def getNetworkWiFiList(self):
+    def getNetworkWiFiList(self) -> dict:
         json_file = open(CONFIG_PATH, 'r', encoding='utf-8')
         wifi_list = json.load(json_file)
         json_file.close()
         return {"wifi": wifi_list}
 
-    def setNetworkWifi(self, ssid: str, password: str):
+    def setNetworkWifi(self, ssid: str, password: str) -> None:
         network_status_list = subprocess.Popen("nmcli device status | grep \" wifi \" | awk '{print $3} {print $4}'", shell=True, stdout=subprocess.PIPE).stdout.readlines()
         network_connection = network_status_list[1].decode('utf-8').strip('\n')
         if network_connection == "Hotspot":
@@ -44,7 +44,7 @@ class NetWork:
                 os.system("nmcli dev wifi rescan")
                 os.system("nmcli c up " + network_connection)
 
-    def __downConnection(self, ssid: str):
+    def __downConnection(self, ssid: str) -> bool:
         os.system("nmcli c down " + ssid)
         network_status_list = subprocess.Popen("nmcli device status | grep \" wifi \" | awk '{print $3} {print $4}'", shell=True, stdout=subprocess.PIPE).stdout.readlines()
         network_status = network_status_list[0].decode('utf-8').strip('\n')
@@ -53,7 +53,7 @@ class NetWork:
         else:
             return False
 
-    def __upHotspot(self):
+    def __upHotspot(self) -> bool:
         os.system("nmcli c up Hotspot")
         network_status_list = subprocess.Popen("nmcli device status | grep \" wifi \" | awk '{print $3} {print $4}'", shell=True, stdout=subprocess.PIPE).stdout.readlines()
         network_status = network_status_list[0].decode('utf-8').strip('\n')
@@ -63,7 +63,7 @@ class NetWork:
         else:
             return False
 
-    def __connectWifi(self, ssid: str, password: str):
+    def __connectWifi(self, ssid: str, password: str) -> bool:
         os.system("nmcli dev wifi c \"" + ssid + "\" password \"" + password + "\"")
         network_status_list = subprocess.Popen("nmcli device status | grep \" wifi \" | awk '{print $3} {print $4}'", shell=True, stdout=subprocess.PIPE).stdout.readlines()
         network_status = network_status_list[0].decode('utf-8').strip('\n')
@@ -73,12 +73,12 @@ class NetWork:
         else:
             return False
 
-    def __restartAp(self):
+    def __restartAp(self) -> None:
         os.system("nmcli dev wifi rescan")
         self.__updateWiFiList()
         while self.__upHotspot(): break
 
-    def __deleteConnection(self, ssid: str):
+    def __deleteConnection(self, ssid: str) -> bool:
         os.system("nmcli c delete " + ssid)
         check = subprocess.Popen("nmcli c show | grep \"" + ssid + "\"", shell=True, stdout=subprocess.PIPE).stdout.readline().decode('utf-8').strip('\n')
         if check != "":
@@ -86,7 +86,7 @@ class NetWork:
         else:
             return True
 
-    def rescanWiFiList(self):
+    def rescanWiFiList(self) -> None:
         network_status_list = subprocess.Popen("nmcli device status | grep \" wifi \" | awk '{print $3} {print $4}'", shell=True, stdout=subprocess.PIPE).stdout.readlines()
         network_status = network_status_list[0].decode('utf-8').strip('\n')
         network_connection = network_status_list[1].decode('utf-8').strip('\n')
@@ -97,7 +97,7 @@ class NetWork:
         else:
             self.__updateWiFiList()
 
-    def __updateWiFiList(self):
+    def __updateWiFiList(self) -> None:
         wifi_info = subprocess.Popen("nmcli dev wifi list | grep Infra | awk '$1!=\"*\"' | awk '{print $2} {print $7}'", shell=True, stdout=subprocess.PIPE).stdout.readlines()
         wifi_json = {}
         for i, count in zip(range(0, len(wifi_info), 2), range(len(wifi_info) // 2)):
