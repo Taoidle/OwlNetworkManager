@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, UploadFile, File
 from pydantic import BaseModel
 from typing import Union
 from network import NetWork
@@ -25,26 +25,27 @@ app.add_middleware(
     allow_headers=["*"])  #允许跨域的headers，可以用来鉴别来源等作用。
 
 @app.get("/")
-def root():
+async def root():
     return {"message": "ok"}
 
 
 @app.get("/api/status")
-def getStatus():
+async def getStatus():
     return NetWork().getNetworkStatus()
 
 
 @app.get("/api/list")
-def getWifiList():
+async def getWifiList():
     return NetWork().getNetworkWiFiList()
 
 
 @app.get("/api/rescan")
-def rescanWiFi():
+async def rescanWiFi():
     NetWork().rescanWiFiList()
 
 
 @app.post("/api/wifi")
 def connectWiFi(wifi: WiFi):
     net.setNetworkWifi(wifi.ssid, wifi.passwd)
+async def connectWiFi(wifi: WiFi):
     NetWork().setNetworkWifi(wifi.ssid, wifi.passwd)
