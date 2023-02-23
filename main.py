@@ -45,7 +45,5 @@ async def rescanWiFi():
 
 
 @app.post("/api/wifi")
-def connectWiFi(wifi: WiFi):
-    net.setNetworkWifi(wifi.ssid, wifi.passwd)
 async def connectWiFi(wifi: WiFi):
     NetWork().setNetworkWifi(wifi.ssid, wifi.passwd)
