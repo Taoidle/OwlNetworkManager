@@ -2,6 +2,7 @@ from fastapi import FastAPI, Query, UploadFile, File
 from pydantic import BaseModel
 from typing import Union
 from network import NetWork
+from ota import Ota
 from starlette.middleware.cors import CORSMiddleware
 
 
@@ -47,3 +48,11 @@ async def rescanWiFi():
 @app.post("/api/wifi")
 async def connectWiFi(wifi: WiFi):
     NetWork().setNetworkWifi(wifi.ssid, wifi.passwd)
+
+
+@app.post("/api/update")
+async def otaUpdate(file: UploadFile = File(...)):
+    if file.filename.split('.')[1] == "zip":
+        return await Ota().update(file)
+    else:
+        return {"statusCode": "400", "status": "failed", "message": "files type is not zip"}
