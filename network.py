@@ -1,9 +1,7 @@
 import subprocess
 import os
 import json
-
-CONFIG_PATH = "/etc/owl/net-server/wifi_list.json"
-
+from config import NETWORK_CONFIG_PATH as network_path
 
 class NetWork:
 
@@ -27,7 +25,7 @@ class NetWork:
             return {"statusCode": "200", "status": "disconnected"}
 
     def getNetworkWiFiList(self) -> dict:
-        json_file = open(CONFIG_PATH, 'r', encoding='utf-8')
+        json_file = open(network_path, 'r', encoding='utf-8')
         wifi_list = json.load(json_file)
         json_file.close()
         return {"wifi": wifi_list}
@@ -102,6 +100,6 @@ class NetWork:
         wifi_json = {}
         for i, count in zip(range(0, len(wifi_info), 2), range(len(wifi_info) // 2)):
             wifi_json.update({str(count): {"ssid": wifi_info[i].decode('utf-8').strip('\n'), "signal": wifi_info[i + 1].decode('utf-8').strip('\n')}})
-        with open(CONFIG_PATH, "w", encoding='utf-8') as f:
+        with open(network_path, "w", encoding='utf-8') as f:
             f.write(json.dumps(wifi_json, ensure_ascii=False))
         f.close()
