@@ -59,7 +59,7 @@ class Ota:
         os.mkdir(update_dir)
 
     async def __decode_file(self, filename: str) -> bool:
-        rsa_pub_file = open(key_path)
+        rsa_pub_file = open(key_path, encoding='gbk')
         key = rsa_pub_file.read()
         rsa_key = RSA.importKey(key.encode("utf-8"))
         verifier = PKCS1_v1_5.new(rsa_key)
