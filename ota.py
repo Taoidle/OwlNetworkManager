@@ -41,6 +41,7 @@ class Ota:
             zip_file.extract(file_item, update_dir)
         zip_file.close()
         if os.path.exists(update_dir + "ota_update.sh"):
+            os.system("chmod a+x " + update_dir + "ota_update.sh")
             if subprocess.Popen("/bin/bash " + update_dir + "ota_update.sh", shell=True, stderr=subprocess.PIPE).stderr.readline().decode('utf-8').strip('\n') != "":
                 await self.__delete_ota_files(filename)
                 return {"statusCode": "400", "status": "failed"}
