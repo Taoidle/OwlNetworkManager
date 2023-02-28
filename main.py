@@ -52,7 +52,9 @@ async def connectWiFi(wifi: WiFi):
 
 @app.post("/api/update")
 async def otaUpdate(file: UploadFile = File(...)):
-    if file.filename.split('.')[1] == "zip":
+    split_list = file.filename.split('.')
+    print(split_list[len(split_list) - 1])
+    if split_list[len(split_list) - 1] == "zip":
         return await Ota().update(file)
     else:
         return {"statusCode": "400", "status": "failed", "message": "files type is not zip"}
