@@ -1,3 +1,4 @@
+import shutil
 import subprocess
 import os
 from fastapi import File
@@ -30,23 +31,31 @@ class Ota:
             if await self.__stop_services(ota_service_list):
                 if await self.__decode_file(file.filename):
                     if await self.__split_file(file.filename, update_filename):
-                        return await self.__update()
-
+                        return await self.__update(file.filename)
         else:
             return {"statusCode": "400", "status": "failed"}
 
-    async def __update(self):
+    async def __update(self, filename: str):
         zip_file = zipfile.ZipFile(ota_dir + update_filename, "r")
         for file_item in zip_file.namelist():
             zip_file.extract(file_item, update_dir)
         zip_file.close()
         if os.path.exists(update_dir + "ota_update.sh"):
             if subprocess.Popen("/bin/bash " + update_dir + "ota_update.sh", shell=True, stderr=subprocess.PIPE).stderr.readline().decode('utf-8').strip('\n') != "":
+                await self.__delete_ota_files(filename)
                 return {"statusCode": "400", "status": "failed"}
             else:
+                await self.__delete_ota_files(filename)
                 return {"statusCode": "200", "status": "success"}
         else:
+            await self.__delete_ota_files(filename)
             return {"statusCode": "400", "status": "failed"}
+
+    async def __delete_ota_files(self, filename: str):
+        os.remove(ota_dir + filename)
+        os.remove(ota_dir + update_filename)
+        shutil.rmtree(update_dir)
+        os.mkdir(update_dir)
 
     async def __decode_file(self, filename: str) -> bool:
         rsa_pub_file = open(key_path)
