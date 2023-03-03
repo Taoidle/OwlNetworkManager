@@ -4,6 +4,7 @@ from Cryptodome.PublicKey import RSA
 import os
 import base64
 import zipfile
+import json
 
 zipf = zipfile.ZipFile("sign_files/update_unsig.zip", 'w')
 pre_len = len(os.path.dirname("./compress/"))
@@ -31,9 +32,9 @@ sign = signer.sign(digest)
 signature = base64.b64encode(sign)
 
 version_file = open("./compress/VERSION", "r")
-version = version_file.readline()
+json_data = json.load(version_file)
 
-file_out = open("./sign_files/update(" + version + ").zip", "wb+")
+file_out = open("./sign_files/update(" + json_data["version"] + ").zip", "wb+")
 file_data = signature + file_data
 
 file_out.write(file_data)
