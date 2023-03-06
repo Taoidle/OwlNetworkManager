@@ -40,6 +40,10 @@ async def getWifiList():
     return NetWork().getNetworkWiFiList()
 
 
+@app.get("/api/reset")
+async def resetWiFi():
+    NetWork().resetWiFi()
+
 @app.get("/api/rescan")
 async def rescanWiFi():
     NetWork().rescanWiFiList()
