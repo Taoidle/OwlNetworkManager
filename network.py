@@ -86,6 +86,7 @@ class NetWork:
 
     def resetWiFi(self) -> None:
         os.system("rm /etc/NetworkManager/system-connections/* && systemctl restart NetworkManager")
+        self.rescanWiFiList()
 
     def rescanWiFiList(self) -> None:
         network_status_list = subprocess.Popen("nmcli device status | grep \" wifi \" | awk '{print $3} {print $4}'", shell=True, stdout=subprocess.PIPE).stdout.readlines()
