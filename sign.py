@@ -10,7 +10,8 @@ import datetime
 
 VERSION_PATH = './compress/VERSION'
 KERNEL = "6.1.11"
-TAG = "debug"
+TAG = ""
+INC = True
 TARGET_FILE = "sign_files/update_unsig.zip"
 SIGN_FILE = "sign_files/update.zip"
 DIR_IN = "./compress/"
@@ -117,5 +118,5 @@ class Sign:
 
 
 if __name__ == '__main__':
-    sign_version = Sign().update_version(VERSION_PATH, KERNEL)
+    sign_version = Sign().update_version(VERSION_PATH, KERNEL, TAG, INC)
     Sign().sign(RSA_PATH, SIGN_FILE, TARGET_FILE, sign_version, True, DIR_IN)
