@@ -25,10 +25,13 @@ app.add_middleware(
     allow_methods=["*"],  # 设置允许跨域的http方法，比如 get、post、put等。
     allow_headers=["*"])  #允许跨域的headers，可以用来鉴别来源等作用。
 
-@app.get("/")
+@app.head("/")
 async def root():
     return {"message": "ok"}
 
+@app.get("/")
+async def root():
+    return {"message": "ok"}
 
 @app.get("/api/status")
 async def getStatus():
