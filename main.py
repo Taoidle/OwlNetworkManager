@@ -65,3 +65,7 @@ async def otaUpdate(file: UploadFile = File(...)):
         return await Ota().update(file)
     else:
         return {"statusCode": "400", "status": "failed", "message": "files type is not zip"}
+
+@app.get("/api/owl_restart")
+async def owlRestart():
+    NetWork().restartOwlService()

@@ -15,6 +15,9 @@ class NetWork:
     def __init__(self):
         pass
 
+    def restartOwlService(self):
+        os.system("systemctl restart owl apriltag")
+
     def getNetworkStatus(self) -> dict:
         network_status_list = subprocess.Popen("nmcli device status | grep \" wifi \" | awk '{print $1} {print $3} {print $4}'", shell=True, stdout=subprocess.PIPE).stdout.readlines()
         network_status = network_status_list[1].decode('utf-8').strip('\n')
