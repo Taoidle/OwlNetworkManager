@@ -1,3 +1,5 @@
+import json
+
 from fastapi import FastAPI, Query, UploadFile, File
 from pydantic import BaseModel
 from typing import Union
@@ -32,6 +34,13 @@ async def root():
 @app.get("/")
 async def root():
     return {"message": "ok"}
+
+@app.get("/api/version")
+async def getVersion():
+    json_file = open("./VERSION", 'r', encoding='utf-8')
+    version = json.load(json_file)
+    json_file.close()
+    return version
 
 @app.get("/api/status")
 async def getStatus():
