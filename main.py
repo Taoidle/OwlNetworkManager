@@ -14,7 +14,7 @@ class WiFi(BaseModel):
     passwd: Union[str, None] = Query(default=None, min_length=8, max_length=32, regex="^[0-9a-zA-Z_-]{1,}$")
 
 
-class ReWiFi (WiFi):
+class ReWiFi(WiFi):
     reset: bool
 
 
@@ -30,10 +30,11 @@ app = FastAPI()
 origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  #设置允许的origins来源
+    allow_origins=origins,  # 设置允许的origins来源
     allow_credentials=True,
     allow_methods=["*"],  # 设置允许跨域的http方法，比如 get、post、put等。
-    allow_headers=["*"])  #允许跨域的headers，可以用来鉴别来源等作用。
+    allow_headers=["*"])  # 允许跨域的headers，可以用来鉴别来源等作用。
+
 
 @app.head("/")
 async def root():
