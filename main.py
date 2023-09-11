@@ -1,11 +1,11 @@
 import json
-
 from fastapi import FastAPI, Query, UploadFile, File
 from pydantic import BaseModel
 from typing import Union
 from network import NetWork
 from ota import Ota
 from offline import Offline
+from env import Env
 from starlette.middleware.cors import CORSMiddleware
 
 
@@ -24,6 +24,12 @@ class OfflineRun(BaseModel):
 
 class OfflineSetting(OfflineRun):
     run: bool
+
+
+class EnvTable(BaseModel):
+    offset: int
+    limit: int
+
 
 app = FastAPI()
 
@@ -127,3 +133,43 @@ async def offlineRun(run: OfflineRun):
 @app.get("/api/offline/kill")
 async def offlineKill():
     return await Offline().killOffline()
+
+
+@app.post("/api/env/list/python")
+async def getEnvListPython(data: EnvTable):
+    return await Env().getEnvListPython(data.offset, data.limit)
+
+
+@app.post("/api/env/list/cpp")
+async def getEnvListCpp(data: EnvTable):
+    return await Env().getEnvListCpp(data.offset, data.limit)
+
+
+@app.post("/api/env/list/ospkg")
+async def getEnvListOsPkg(data: EnvTable):
+    return await Env().getEnvListOsPkg(data.offset, data.limit)
+
+
+@app.get("/api/env/reload/python")
+async def envReloadPython():
+    return await Env().envReloadPython()
+
+
+@app.get("/api/env/reload/cpp")
+async def envReloadPython():
+    return await Env().envReloadCpp()
+
+
+@app.get("/api/env/reload/ospkg")
+async def envReloadOsPkg():
+    return await Env().envReloadPkg()
+
+
+@app.post("/api/env/python/update")
+async def envUpdatePython(file: UploadFile = File(...)):
+    split_list = file.filename.split('.')
+    print(split_list[len(split_list) - 1])
+    if split_list[len(split_list) - 1] == "zip":
+        return await Env().saveUpload(file)
+    else:
+        return {"statusCode": "400", "status": "failed", "message": "files type is not zip"}
