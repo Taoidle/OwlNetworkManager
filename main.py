@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from typing import Union
 from network import NetWork
 from ota import Ota
+from offline import Offline
 from starlette.middleware.cors import CORSMiddleware
 
 
@@ -16,6 +17,13 @@ class WiFi(BaseModel):
 class ReWiFi (WiFi):
     reset: bool
 
+
+class OfflineRun(BaseModel):
+    id: int
+
+
+class OfflineSetting(OfflineRun):
+    run: bool
 
 app = FastAPI()
 
@@ -31,9 +39,11 @@ app.add_middleware(
 async def root():
     return {"message": "ok"}
 
+
 @app.get("/")
 async def root():
     return {"message": "ok"}
+
 
 @app.get("/api/version")
 async def getVersion():
@@ -41,6 +51,7 @@ async def getVersion():
     version = json.load(json_file)
     json_file.close()
     return version
+
 
 @app.get("/api/status")
 async def getStatus():
@@ -55,6 +66,7 @@ async def getWifiList():
 @app.get("/api/reset")
 async def resetWiFi():
     NetWork().resetWiFi()
+
 
 @app.get("/api/rescan")
 async def rescanWiFi():
@@ -75,6 +87,42 @@ async def otaUpdate(file: UploadFile = File(...)):
     else:
         return {"statusCode": "400", "status": "failed", "message": "files type is not zip"}
 
+
 @app.get("/api/owl_restart")
 async def owlRestart():
     NetWork().restartOwlService()
+
+
+@app.get("/api/offline/list")
+async def getOfflineList():
+    return await Offline().getOfflineList()
+
+
+@app.get("/api/offline/settings")
+async def getOfflineSettings():
+    return await Offline().getOfflineSettings()
+
+
+@app.post("/api/offline/upload")
+async def offlineUpload(file: UploadFile = File(...)):
+    split_list = file.filename.split('.')
+    print(split_list[len(split_list) - 1])
+    if split_list[len(split_list) - 1] == "zip":
+        return await Offline().saveUpload(file)
+    else:
+        return {"statusCode": "400", "status": "failed", "message": "files type is not zip"}
+
+
+@app.post("/api/offline/update")
+async def offlineUpdate(setting: OfflineSetting):
+    return await Offline().setOffline(setting.id, setting.run)
+
+
+@app.post("/api/offline/run")
+async def offlineRun(run: OfflineRun):
+    return await Offline().runOffline(run.id)
+
+
+@app.get("/api/offline/kill")
+async def offlineKill():
+    return await Offline().killOffline()
